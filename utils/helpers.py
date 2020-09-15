@@ -4,9 +4,9 @@ import torch
 import cv2
 
 label_colors_list = [
-        (64,128,64), # animal
-        (192,0,128), # archway
-        (0,128, 192), # bicyclist
+        (64, 128, 64), # animal
+        (192, 0, 128), # archway
+        (0, 128, 192), # bicyclist
         (0, 128, 64), #bridge
         (128, 0, 0), # building
         (64, 0, 128), #car
@@ -26,7 +26,7 @@ label_colors_list = [
         (0, 0, 192), # sidewalk
         (192, 128, 128), # sign symbol
         (128, 128, 128), # sky
-        (64, 128,192), # suv pickup truck
+        (64, 128, 192), # suv pickup truck
         (0, 0, 64), # traffic cone
         (0, 64, 64), # traffic light
         (192, 64, 128), # train
@@ -62,7 +62,7 @@ def get_label_mask(mask, class_values):
     return label_mask
 
 
-def valid_seg_maps(output, label_colors_nparray, epoch, i):
+def draw_seg_maps(output, label_colors_nparray, epoch, i):
     """
     This function color codes the segmentation maps that is generated while
     validating (if the user passes the argument while executing 
@@ -103,7 +103,7 @@ def visualize_from_dataloader(data_loader):
     images = [image, label.squeeze()]
     for i, image in enumerate(images):
         plt.subplot(1, 2, i+1)
-        plt.imshow(image)
+        plt.imshow(image, cmap='gray')
     plt.show()
 
 def visualize_from_path(image_path, seg_path):

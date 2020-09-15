@@ -28,8 +28,8 @@ for epoch in range(epochs):
     train_mIoU.append(train_epoch_mIoU)
     valid_loss.append(valid_epoch_loss)
     valod_mIoU.append(valid_epoch_mIoU)
-    print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.2f}")
-    print(f'Valid Loss: {valid_epoch_loss:.4f}, Valid Acc: {valid_epoch_mIoU:.2f}')
+    print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.4f}")
+    print(f'Valid Loss: {valid_epoch_loss:.4f}, Valid mIoU: {valid_epoch_mIoU:.4f}')
 
     # save model every 5 epochs
     if (epoch+1) % 5 == 0:

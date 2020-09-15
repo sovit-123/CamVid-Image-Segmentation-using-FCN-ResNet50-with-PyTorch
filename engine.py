@@ -6,7 +6,7 @@ import numpy as np
 
 from model import model
 from tqdm import tqdm
-from utils.helpers import valid_seg_maps, label_colors_list
+from utils.helpers import draw_seg_maps, label_colors_list
 from utils.helpers import save_model_dict
 from utils.metrics import eval_metric
 
@@ -84,7 +84,7 @@ class Trainer:
                 # save the validation segmentation maps every...
                 # ... last batch of each epoch
                 if i == int(len(self.valid_dataset)/self.valid_data_loader.batch_size) - 1:
-                    valid_seg_maps(outputs, label_colors_list, epoch, i)
+                    draw_seg_maps(outputs, label_colors_list, epoch, i)
 
                 ##### BATCH-WISE LOSS #####
                 loss = self.criterion(outputs, target)

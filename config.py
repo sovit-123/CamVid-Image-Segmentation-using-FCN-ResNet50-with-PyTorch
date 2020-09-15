@@ -11,7 +11,7 @@ CLASSES_TO_TRAIN = ['animal', 'archway', 'bicyclist', 'bridge', 'building', 'car
         'signsymbol', 'sky', 'suvpickuptruck', 'trafficcone', 'trafficlight', 
         'train', 'tree', 'truckbase', 'tunnel', 'vegetationmisc', 'void',
         'wall']
-# CLASSES_TO_TRAIN = ['car', 'pedestrian', 'void', 'lanemarkingdrve', 'lanemarkingnondrve']
+# CLASSES_TO_TRAIN = ['lanemarkingdrve']
 
 # DEBUG for visualizations
-DEBUG = False
+DEBUG = True
