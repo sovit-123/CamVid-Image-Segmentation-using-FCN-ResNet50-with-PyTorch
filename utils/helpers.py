@@ -117,10 +117,10 @@ def visualize_from_path(image_path, seg_path):
         plt.imshow(image)
     plt.show()
 
-def save_model_dict(model, epochs, optimizer, criterion):
+def save_model_dict(model, epoch, optimizer, criterion):
     torch.save({
-            'epoch': epochs,
+            'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'loss': criterion,
-            }, f"checkpoints/model_{epochs}.pth")
+            }, f"checkpoints/model_{epoch}.pth")

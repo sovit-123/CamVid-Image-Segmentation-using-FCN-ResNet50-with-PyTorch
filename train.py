@@ -19,7 +19,7 @@ trainer = Trainer(
 )
 
 train_loss , train_mIoU = [], []
-valid_loss , valod_mIoU = [], []
+valid_loss , valid_mIoU = [], []
 for epoch in range(epochs):
     print(f"Epoch {epoch+1} of {epochs}")
     train_epoch_loss, train_epoch_mIoU = trainer.fit(epoch, epochs)
@@ -27,7 +27,7 @@ for epoch in range(epochs):
     train_loss.append(train_epoch_loss)
     train_mIoU.append(train_epoch_mIoU)
     valid_loss.append(valid_epoch_loss)
-    valod_mIoU.append(valid_epoch_mIoU)
+    valid_mIoU.append(valid_epoch_mIoU)
     print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.4f}")
     print(f'Valid Loss: {valid_epoch_loss:.4f}, Valid mIoU: {valid_epoch_mIoU:.4f}')
 
@@ -35,3 +35,5 @@ for epoch in range(epochs):
     if (epoch+1) % 5 == 0:
         print('SAVING MODEL')
         trainer.save_model(epoch)
+        print('SAVING COMPLETE')
+        print('TRAINING COMPLETE')

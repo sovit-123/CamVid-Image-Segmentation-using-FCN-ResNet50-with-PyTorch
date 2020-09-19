@@ -14,7 +14,7 @@ class Trainer:
     def __init__(self, model, train_data_loader, train_dataset, valid_data_loader, valid_dataset, classes_to_train):
         super(Trainer, self).__init__()
 
-        self.optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
         print('OPTIMIZER INITIALIZED')
         self.criterion = nn.CrossEntropyLoss() 
         print('LOSS FUNCTION INITIALIZED')
