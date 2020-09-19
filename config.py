@@ -1,4 +1,4 @@
-EPOCHS = 20
+EPOCHS = 30
 BATCH_SIZE = 16
 DEVICE = 'cuda'
 ROOT_PATH = '../input/camvid'
@@ -14,4 +14,4 @@ CLASSES_TO_TRAIN = ['animal', 'archway', 'bicyclist', 'bridge', 'building', 'car
 # CLASSES_TO_TRAIN = ['lanemarkingdrve']
 
 # DEBUG for visualizations
-DEBUG = True
+DEBUG = False

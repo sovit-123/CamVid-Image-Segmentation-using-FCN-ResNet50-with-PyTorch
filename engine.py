@@ -3,6 +3,7 @@ import config
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+import sys
 
 from model import model
 from tqdm import tqdm
@@ -11,23 +12,50 @@ from utils.helpers import save_model_dict
 from utils.metrics import eval_metric
 
 class Trainer:
-    def __init__(self, model, train_data_loader, train_dataset, valid_data_loader, valid_dataset, classes_to_train):
+    def __init__(self, model, train_data_loader, train_dataset, 
+                 valid_data_loader, valid_dataset, classes_to_train, 
+                 epochs, resume_training=None, model_path=None):
         super(Trainer, self).__init__()
 
         self.optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
         print('OPTIMIZER INITIALIZED')
         self.criterion = nn.CrossEntropyLoss() 
         print('LOSS FUNCTION INITIALIZED')
-
         self.train_data_loader = train_data_loader
         self.train_dataset = train_dataset
         self.valid_data_loader = valid_data_loader
         self.valid_dataset = valid_dataset
         self.model = model
         self.num_classes = len(classes_to_train)
+        self.epochs = epochs
         print(f"NUM CLASSES: {self.num_classes}")
 
-    def fit(self, epoch, epochs):
+        if resume_training == 'yes':
+            print('RESUMING TRAINING')
+            # load the model checkpoint
+            checkpoint = torch.load(model_path)
+            self.trained_epochs = checkpoint['epoch']
+            print(f"PREVIOUSLY TRAINED EPOCHS: {self.trained_epochs}")
+            if self.trained_epochs >= self.epochs:
+                print('Current epochs less than previously trained epcochs...')
+                print(f"Please provide greater number of epochs than {self.trained_epochs}")
+                sys.exit()
+            elif self.epochs > self.trained_epochs:
+                #  load model weights state_dict
+                 self.model.load_state_dict(checkpoint['model_state_dict'])
+                 print('TRAINED MODEL WEIGHTS LOADED...')
+                 # load trained optimizer state_dict
+                 self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                 print('TRAINED OPTIMIZER LOADED...')
+
+        elif resume_training == 'no':
+            self.trained_epochs = 0
+            print('TRAINING FROM BEGINNING')
+
+    def get_num_epochs(self):
+        return self.trained_epochs
+
+    def fit(self):
         print('Training')
         model.train()
         train_running_loss = 0.0
@@ -68,7 +96,7 @@ class Trainer:
         ##############################
         return train_loss, mIoU
 
-    def validate(self, epoch, epochs):
+    def validate(self, epoch):
         print('Validating')
         model.eval()
         valid_running_loss = 0.0
