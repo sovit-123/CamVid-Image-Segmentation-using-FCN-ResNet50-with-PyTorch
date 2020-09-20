@@ -62,30 +62,52 @@ def get_label_mask(mask, class_values):
     return label_mask
 
 
-def draw_seg_maps(output, label_colors_nparray, epoch, i):
+def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
     """
     This function color codes the segmentation maps that is generated while
     validating (if the user passes the argument while executing 
     `train.py`).
     """
-    sample = output[0] # use only one output from the batch
-    sample = torch.argmax(sample.squeeze(), dim=0).detach().cpu().numpy()
+    alpha = 0.6 # how much transparency
+    beta = 1 - alpha # alpht + beta should be 1
+    gamma = 0 # contrast
 
-    r = np.zeros_like(sample).astype(np.uint8)
-    g = np.zeros_like(sample).astype(np.uint8)
-    b = np.zeros_like(sample).astype(np.uint8)
+    seg_map = output[0] # use only one output from the batch
+    seg_map = torch.argmax(seg_map.squeeze(), dim=0).detach().cpu().numpy()
+
+    image = data[0]
+    image = np.array(image.cpu())
+    image = np.transpose(image, (1, 2, 0))
+    # unnormalize the image (important step)
+    mean = np.array([0.45734706, 0.43338275, 0.40058118])
+    std = np.array([0.23965294, 0.23532275, 0.2398498])
+    image = std * image + mean
+    image = np.array(image, dtype=np.float32)
+    image = image * 255 # else OpenCV will save black image
+
+
+    r = np.zeros_like(seg_map).astype(np.uint8)
+    g = np.zeros_like(seg_map).astype(np.uint8)
+    b = np.zeros_like(seg_map).astype(np.uint8)
     
     for l in range(0, 32):
-        idx = sample == l
+        idx = seg_map == l
         r[idx] = np.array(label_colors_list)[l, 0]
         g[idx] = np.array(label_colors_list)[l, 1]
         b[idx] = np.array(label_colors_list)[l, 2]
         
     rgb = np.stack([r, g, b], axis=2)
-    plt.imshow(rgb)
-    plt.axis('off')
-    plt.savefig(f"train_seg_maps/e{epoch}_b{i}.jpg")
-    plt.close()
+    rgb = np.array(rgb, dtype=np.float32)
+    # convert color to BGR format for OpenCV
+    rgb = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    cv2.addWeighted(rgb, alpha, image, beta, gamma, image)
+    cv2.imwrite(f"train_seg_maps/e{epoch}_b{i}.jpg", image)
+    # plt.imshow(image)
+    # plt.imshow(rgb, alpha=0.3)
+    # plt.axis('off')
+    # plt.savefig(f"train_seg_maps/e{epoch}_b{i}.jpg")
+    # plt.close()
 
 
 def visualize_from_dataloader(data_loader): 

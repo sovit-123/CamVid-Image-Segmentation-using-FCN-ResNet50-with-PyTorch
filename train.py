@@ -65,6 +65,6 @@ for epoch in range(epochs_to_train):
     # save model every 5 epochs
     if (epoch+1+trained_epochs) % 5 == 0:
         print('SAVING MODEL')
-        trainer.save_model(epoch+1)
+        trainer.save_model(epoch+1+trained_epochs)
         print('SAVING COMPLETE')
         print('TRAINING COMPLETE')
