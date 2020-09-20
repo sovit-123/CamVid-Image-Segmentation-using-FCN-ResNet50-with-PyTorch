@@ -8,9 +8,7 @@ import torch.nn as nn
 
 def model(pretrained, requires_grad):
     model = models.segmentation.fcn_resnet50(
-        pretrained=pretrained, progress=True,
-        # num_classes=32
-    )
+        pretrained=pretrained, progress=True)
 
     if requires_grad == True:
         for param in model.parameters():
@@ -19,10 +17,10 @@ def model(pretrained, requires_grad):
         for param in model.parameters():
             param.requires_grad = False
 
-    # change the classification FCNHead
+    # change the classification FCNHead and make it learnable
     model.classifier[4] = nn.Conv2d(512, 32, kernel_size=(1, 1))
 
-    # change the aux_classification FCNHead
+    # change the aux_classification FCNHead and make it learnable
     model.aux_classifier[4] = nn.Conv2d(256, 32, kernel_size=(1, 1))
     
     return model

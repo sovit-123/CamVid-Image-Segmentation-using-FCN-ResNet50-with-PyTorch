@@ -74,11 +74,15 @@ class Trainer:
             ###########################
 
             ##### BATCH-WISE METRICS ####
-            correct, num_labeled, inter, union = eval_metric(outputs, 
+            correct, labeled, inter, union = eval_metric(outputs, 
                                                              target, 
                                                              self.num_classes)
+            # for IoU
             train_running_inter += inter
             train_running_union += union
+            # for pixel accuracy
+            train_running_correct += correct
+            train_running_label += labeled
             #############################
 
             ##### BACKPROPAGATION AND PARAMETER UPDATION #####
@@ -91,10 +95,13 @@ class Trainer:
         ##########################
 
         ##### PER EPOCH METRICS ######
+        # IoU and mIoU
         IoU = 1.0 * train_running_inter / (np.spacing(1) + train_running_union)
         mIoU = IoU.mean()
+        # pixel accuracy
+        pixel_acc = 1.0 * train_running_correct / (np.spacing(1) + train_running_label)
         ##############################
-        return train_loss, mIoU
+        return train_loss, mIoU, pixel_acc
 
     def validate(self, epoch):
         print('Validating')
@@ -120,11 +127,14 @@ class Trainer:
                 ###########################
 
                 ##### BATCH-WISE METRICS ####
-                correct, num_labeled, inter, union = eval_metric(outputs, 
+                correct, labeled, inter, union = eval_metric(outputs, 
                                                                 target, 
                                                                 self.num_classes)
                 valid_running_inter += inter
                 valid_running_union += union
+                # for pixel accuracy
+                valid_running_correct += correct
+                valid_running_label += labeled
                 #############################
             
         ##### PER EPOCH LOSS #####
@@ -132,10 +142,13 @@ class Trainer:
         ##########################
 
         ##### PER EPOCH METRICS ######
+        # IoU and mIoU
         IoU = 1.0 * valid_running_inter / (np.spacing(1) + valid_running_union)
         mIoU = IoU.mean()
+        # pixel accuracy
+        pixel_acc = 1.0 * valid_running_correct / (np.spacing(1) + valid_running_label)
         ##############################
-        return valid_loss, mIoU
+        return valid_loss, mIoU, pixel_acc
 
     def save_model(self, epochs):
         save_model_dict(self.model, epochs, self.optimizer, self.criterion)
