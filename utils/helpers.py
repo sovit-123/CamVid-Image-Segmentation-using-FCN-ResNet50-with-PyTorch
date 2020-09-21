@@ -3,6 +3,23 @@ import matplotlib.pyplot as plt
 import torch
 import cv2
 
+from tensorboardX import SummaryWriter
+
+class Tensorboard_Writer():
+    def __init__(self):
+        super(Tensorboard_Writer, self).__init__()
+    # initilaize `SummaryWriter()`
+        self.writer = SummaryWriter()
+    def tensorboard_writer(self, train_loss, train_mIoU, train_pixacc, 
+                        valid_loss, valid_mIoU, valid_pixacc,
+                        epoch_iter):
+        self.writer.add_scalar('Train Loss', train_loss, epoch_iter)
+        self.writer.add_scalar('Valid Loss', valid_loss, epoch_iter)
+        self.writer.add_scalar('Train mIoU', train_mIoU, epoch_iter)
+        self.writer.add_scalar('Valid mIoU', valid_mIoU, epoch_iter)
+        self.writer.add_scalar('Train Pixel Acc', train_pixacc, epoch_iter)
+        self.writer.add_scalar('Valid Pixel Acc', valid_pixacc, epoch_iter)
+
 label_colors_list = [
         (64, 128, 64), # animal
         (192, 0, 128), # archway
@@ -65,8 +82,7 @@ def get_label_mask(mask, class_values):
 def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
     """
     This function color codes the segmentation maps that is generated while
-    validating (if the user passes the argument while executing 
-    `train.py`).
+    validating.
     """
     alpha = 0.6 # how much transparency
     beta = 1 - alpha # alpht + beta should be 1
@@ -103,11 +119,6 @@ def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     cv2.addWeighted(rgb, alpha, image, beta, gamma, image)
     cv2.imwrite(f"train_seg_maps/e{epoch}_b{i}.jpg", image)
-    # plt.imshow(image)
-    # plt.imshow(rgb, alpha=0.3)
-    # plt.axis('off')
-    # plt.savefig(f"train_seg_maps/e{epoch}_b{i}.jpg")
-    # plt.close()
 
 
 def visualize_from_dataloader(data_loader): 
@@ -117,7 +128,6 @@ def visualize_from_dataloader(data_loader):
     """
     data = iter(data_loader)   
     images, labels = data.next()
-    # print(images.size(), labels.size())
     image = images[1]
     label = labels[1]
     image = np.array(image, dtype='uint8')

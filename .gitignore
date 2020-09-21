@@ -132,6 +132,7 @@ dmypy.json
 input/
 checkpoints/
 train_seg_maps/
+runs/
 
 # data files
 *.csv

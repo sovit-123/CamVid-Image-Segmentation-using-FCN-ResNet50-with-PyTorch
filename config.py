@@ -1,4 +1,4 @@
-EPOCHS = 5
+EPOCHS = 3
 BATCH_SIZE = 16
 DEVICE = 'cuda'
 ROOT_PATH = '../input/camvid'

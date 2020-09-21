@@ -45,12 +45,12 @@ class CamVidDataset(Dataset):
         mask = cv2.imread(self.path_segs[index], cv2.IMREAD_COLOR)
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
           
-        ##### THIS WORKS TOO #####
+        ##### THIS (READING WITH PIL) WORKS TOO #####
         """
         image = np.array(Image.open(self.path_images[index]).convert('RGB'))
         mask = np.array(Image.open(self.path_segs[index]).convert('RGB'))
         """
-        #####     ######     #####               
+        #############################################               
         
         image = self.image_transform(image=image)['image']
         mask = self.mask_transform(image=mask)['image']

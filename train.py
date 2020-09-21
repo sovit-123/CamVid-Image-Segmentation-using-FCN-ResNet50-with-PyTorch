@@ -6,6 +6,7 @@ from engine import Trainer
 from dataset import train_dataset, train_data_loader
 from dataset import valid_dataset, valid_data_loader
 from model import model
+from utils.helpers import Tensorboard_Writer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--resume-training', dest='resume_training',
@@ -19,6 +20,7 @@ epochs = config.EPOCHS
 
 model.to(config.DEVICE)
 
+# initialie `Trainer` if resuming training
 if args['resume_training'] == 'yes':
     if args['model_path'] == None:
         sys.exit('\nPLEASE PROVIDE A MODEL TO RESUME TRAINING FROM!')
@@ -34,6 +36,7 @@ if args['resume_training'] == 'yes':
     model_path=args['model_path']
 )
 
+# initialie `Trainer` if training from beginning
 else:
     trainer = Trainer( 
         model, 
@@ -45,6 +48,9 @@ else:
         epochs,
         args['resume_training']
     )
+
+# initialize Tensorboard `SummaryWriter()`
+writer = Tensorboard_Writer()
 
 trained_epochs = trainer.get_num_epochs()
 epochs_to_train = epochs - trained_epochs
@@ -61,8 +67,15 @@ for epoch in range(epochs_to_train):
     valid_loss.append(valid_epoch_loss)
     valid_mIoU.append(valid_epoch_mIoU)
     valid_pix_acc.append(valid_epoch_pixacc)
-    print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.4f}, Train PixAcc: {train_epoch_pixacc}")
-    print(f"Valid Loss: {valid_epoch_loss:.4f}, Valid mIoU: {valid_epoch_mIoU:.4f}, Valid PixAcc: {valid_epoch_pixacc}")
+    print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.4f}, Train PixAcc: {train_epoch_pixacc:.4f}")
+    print(f"Valid Loss: {valid_epoch_loss:.4f}, Valid mIoU: {valid_epoch_mIoU:.4f}, Valid PixAcc: {valid_epoch_pixacc:.4f}")
+
+    # write to tensorboard after each epoch
+    writer.tensorboard_writer(
+        train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc,
+        valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc,
+        epoch+1+trained_epochs
+    )
 
     # save model every 5 epochs
     if (epoch+1+trained_epochs) % 5 == 0:
