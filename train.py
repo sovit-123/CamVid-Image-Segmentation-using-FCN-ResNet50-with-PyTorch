@@ -82,4 +82,5 @@ for epoch in range(epochs_to_train):
         print('SAVING MODEL')
         trainer.save_model(epoch+1+trained_epochs)
         print('SAVING COMPLETE')
-        print('TRAINING COMPLETE')
+
+print('TRAINING COMPLETE')
