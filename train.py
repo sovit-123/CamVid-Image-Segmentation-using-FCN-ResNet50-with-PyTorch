@@ -16,6 +16,8 @@ parser.add_argument('-p', '--model-path', dest='model_path',
                     help='path to trained model for resuming training')
 args = vars(parser.parse_args())
 
+print(f"SAVING CHECKPOINT EVERY {config.SAVE_EVERY} EPOCHS\n")
+
 epochs = config.EPOCHS
 
 model.to(config.DEVICE)
@@ -58,29 +60,30 @@ epochs_to_train = epochs - trained_epochs
 train_loss , train_mIoU, train_pix_acc = [], [], []
 valid_loss , valid_mIoU, valid_pix_acc = [], [], []
 for epoch in range(epochs_to_train):
-    print(f"Epoch {epoch+1+trained_epochs} of {epochs}")
+    epoch = epoch+1+trained_epochs
+    print(f"Epoch {epoch} of {epochs}")
     train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc = trainer.fit()
-    valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc = trainer.validate(epoch+1+trained_epochs)
+    valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc = trainer.validate(epoch)
     train_loss.append(train_epoch_loss)
     train_mIoU.append(train_epoch_mIoU)
     train_pix_acc.append(train_epoch_pixacc)
     valid_loss.append(valid_epoch_loss)
     valid_mIoU.append(valid_epoch_mIoU)
     valid_pix_acc.append(valid_epoch_pixacc)
-    print(f"Train Loss: {train_epoch_loss:.4f}, Train mIoU: {train_epoch_mIoU:.4f}, Train PixAcc: {train_epoch_pixacc:.4f}")
-    print(f"Valid Loss: {valid_epoch_loss:.4f}, Valid mIoU: {valid_epoch_mIoU:.4f}, Valid PixAcc: {valid_epoch_pixacc:.4f}")
+    print(f"Train Epoch Loss: {train_epoch_loss:.4f}, Train Epoch mIoU: {train_epoch_mIoU:.4f}, Train Epoch PixAcc: {train_epoch_pixacc:.4f}")
+    print(f"Valid Epoch Loss: {valid_epoch_loss:.4f}, Valid Epoch mIoU: {valid_epoch_mIoU:.4f}, Valid Epoch PixAcc: {valid_epoch_pixacc:.4f}")
 
     # write to tensorboard after each epoch
     writer.tensorboard_writer(
         train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc,
         valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc,
-        epoch+1+trained_epochs
+        epoch
     )
 
     # save model every 5 epochs
-    if (epoch+1+trained_epochs) % 5 == 0:
+    if (epoch) % config.SAVE_EVERY == 0:
         print('SAVING MODEL')
-        trainer.save_model(epoch+1+trained_epochs)
+        trainer.save_model(epoch)
         print('SAVING COMPLETE')
 
 print('TRAINING COMPLETE')

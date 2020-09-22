@@ -1,4 +1,5 @@
-EPOCHS = 3
+EPOCHS = 5
+SAVE_EVERY = 5 # after how many epochs to save a checkpoint
 BATCH_SIZE = 16
 DEVICE = 'cuda'
 ROOT_PATH = '../input/camvid'
