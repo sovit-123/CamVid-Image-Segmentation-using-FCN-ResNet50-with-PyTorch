@@ -10,6 +10,7 @@ from tqdm import tqdm
 from utils.helpers import draw_seg_maps, label_colors_list
 from utils.helpers import save_model_dict
 from utils.metrics import eval_metric
+from utils.helpers import Tensorboard_Writer
 
 class Trainer:
     def __init__(self, model, train_data_loader, train_dataset, 
@@ -28,6 +29,13 @@ class Trainer:
         self.model = model
         self.num_classes = len(classes_to_train)
         self.epochs = epochs
+
+        # initialize Tensorboard `SummaryWriter()`
+        self.writer = Tensorboard_Writer()
+
+        self.train_iters = 0
+        self.valid_iters = 0
+
         print(f"NUM CLASSES: {self.num_classes}")
 
         if resume_training == 'yes':
@@ -89,6 +97,18 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
             ##################################################
+
+            ##### TENSORBOARD LOGGING #####
+            train_running_IoU = 1.0 * inter / (np.spacing(1) + union)
+            train_running_mIoU = train_running_IoU.mean()
+            train_running_pixacc = 1.0 * correct / (np.spacing(1) + labeled)
+            self.writer.tensorboard_writer(
+                loss, train_running_mIoU, train_running_pixacc, self.train_iters,
+                phase='train'
+            )
+            ###############################
+
+            self.train_iters += 1
             
         ##### PER EPOCH LOSS #####
         train_loss = train_running_loss / len(self.train_data_loader.dataset)
@@ -136,6 +156,18 @@ class Trainer:
                 valid_running_correct += correct
                 valid_running_label += labeled
                 #############################
+
+                ##### TENSORBOARD LOGGING #####
+                valid_running_IoU = 1.0 * inter / (np.spacing(1) + union)
+                valid_running_mIoU = valid_running_IoU.mean()
+                valid_running_pixacc = 1.0 * correct / (np.spacing(1) + labeled)
+                self.writer.tensorboard_writer(
+                    loss, valid_running_mIoU, valid_running_pixacc, self.valid_iters, 
+                    phase='valid'
+                )
+                ###############################
+
+                self.valid_iters += 1
             
         ##### PER EPOCH LOSS #####
         valid_loss = valid_running_loss / len(self.valid_data_loader.dataset)

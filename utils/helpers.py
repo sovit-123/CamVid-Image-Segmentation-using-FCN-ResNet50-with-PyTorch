@@ -10,15 +10,15 @@ class Tensorboard_Writer():
         super(Tensorboard_Writer, self).__init__()
     # initilaize `SummaryWriter()`
         self.writer = SummaryWriter()
-    def tensorboard_writer(self, train_loss, train_mIoU, train_pixacc, 
-                        valid_loss, valid_mIoU, valid_pixacc,
-                        epoch_iter):
-        self.writer.add_scalar('Train Loss', train_loss, epoch_iter)
-        self.writer.add_scalar('Valid Loss', valid_loss, epoch_iter)
-        self.writer.add_scalar('Train mIoU', train_mIoU, epoch_iter)
-        self.writer.add_scalar('Valid mIoU', valid_mIoU, epoch_iter)
-        self.writer.add_scalar('Train Pixel Acc', train_pixacc, epoch_iter)
-        self.writer.add_scalar('Valid Pixel Acc', valid_pixacc, epoch_iter)
+    def tensorboard_writer(self, loss, mIoU, pix_acc, iterations, phase=None):
+        if phase == 'train':
+            self.writer.add_scalar('Train Loss', loss, iterations)
+            self.writer.add_scalar('Train mIoU', mIoU, iterations)
+            self.writer.add_scalar('Train Pixel Acc', pix_acc, iterations)
+        if phase == 'valid':
+            self.writer.add_scalar('Valid Loss', loss, iterations)
+            self.writer.add_scalar('Valid mIoU', mIoU, iterations)
+            self.writer.add_scalar('Valid Pixel Acc', pix_acc, iterations)
 
 label_colors_list = [
         (64, 128, 64), # animal

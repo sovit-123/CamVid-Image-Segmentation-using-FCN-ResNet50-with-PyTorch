@@ -6,7 +6,6 @@ from engine import Trainer
 from dataset import train_dataset, train_data_loader
 from dataset import valid_dataset, valid_data_loader
 from model import model
-from utils.helpers import Tensorboard_Writer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--resume-training', dest='resume_training',
@@ -51,9 +50,6 @@ else:
         args['resume_training']
     )
 
-# initialize Tensorboard `SummaryWriter()`
-writer = Tensorboard_Writer()
-
 trained_epochs = trainer.get_num_epochs()
 epochs_to_train = epochs - trained_epochs
 
@@ -73,12 +69,12 @@ for epoch in range(epochs_to_train):
     print(f"Train Epoch Loss: {train_epoch_loss:.4f}, Train Epoch mIoU: {train_epoch_mIoU:.4f}, Train Epoch PixAcc: {train_epoch_pixacc:.4f}")
     print(f"Valid Epoch Loss: {valid_epoch_loss:.4f}, Valid Epoch mIoU: {valid_epoch_mIoU:.4f}, Valid Epoch PixAcc: {valid_epoch_pixacc:.4f}")
 
-    # write to tensorboard after each epoch
-    writer.tensorboard_writer(
-        train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc,
-        valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc,
-        epoch
-    )
+    # tensorboard logging after each epoch
+    # writer.tensorboard_writer(
+    #     train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc,
+    #     valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc,
+    #     epoch
+    # )
 
     # save model every 5 epochs
     if (epoch) % config.SAVE_EVERY == 0:
