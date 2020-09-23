@@ -15,7 +15,8 @@ parser.add_argument('-p', '--model-path', dest='model_path',
                     help='path to trained model for resuming training')
 args = vars(parser.parse_args())
 
-print(f"SAVING CHECKPOINT EVERY {config.SAVE_EVERY} EPOCHS\n")
+print(f"\nSAVING CHECKPOINT EVERY {config.SAVE_EVERY} EPOCHS\n")
+print(f"LOGGING EVERY {config.LOG_EVERY} EPOCHS\n")
 
 epochs = config.EPOCHS
 
@@ -66,18 +67,14 @@ for epoch in range(epochs_to_train):
     valid_loss.append(valid_epoch_loss)
     valid_mIoU.append(valid_epoch_mIoU)
     valid_pix_acc.append(valid_epoch_pixacc)
-    print(f"Train Epoch Loss: {train_epoch_loss:.4f}, Train Epoch mIoU: {train_epoch_mIoU:.4f}, Train Epoch PixAcc: {train_epoch_pixacc:.4f}")
-    print(f"Valid Epoch Loss: {valid_epoch_loss:.4f}, Valid Epoch mIoU: {valid_epoch_mIoU:.4f}, Valid Epoch PixAcc: {valid_epoch_pixacc:.4f}")
 
-    # tensorboard logging after each epoch
-    # writer.tensorboard_writer(
-    #     train_epoch_loss, train_epoch_mIoU, train_epoch_pixacc,
-    #     valid_epoch_loss, valid_epoch_mIoU, valid_epoch_pixacc,
-    #     epoch
-    # )
+    if epoch % config.LOG_EVERY == 0: 
+        print(f"Train Epoch Loss: {train_epoch_loss:.4f}, Train Epoch mIoU: {train_epoch_mIoU:.4f}, Train Epoch PixAcc: {train_epoch_pixacc:.4f}")
+        print(f"Valid Epoch Loss: {valid_epoch_loss:.4f}, Valid Epoch mIoU: {valid_epoch_mIoU:.4f}, Valid Epoch PixAcc: {valid_epoch_pixacc:.4f}")
+
 
     # save model every 5 epochs
-    if (epoch) % config.SAVE_EVERY == 0:
+    if epoch % config.SAVE_EVERY == 0:
         print('SAVING MODEL')
         trainer.save_model(epoch)
         print('SAVING COMPLETE')

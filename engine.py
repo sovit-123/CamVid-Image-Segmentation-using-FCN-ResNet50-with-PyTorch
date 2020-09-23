@@ -69,8 +69,11 @@ class Trainer:
         train_running_loss = 0.0
         train_running_inter, train_running_union = 0, 0
         train_running_correct, train_running_label = 0, 0
-        for i, data in tqdm(enumerate(self.train_data_loader), 
-                            total=int(len(self.train_dataset)/self.train_data_loader.batch_size)):
+        prog_bar = tqdm(self.train_data_loader, 
+                        total=int(len(self.train_dataset)/self.train_data_loader.batch_size))
+        # for i, data in tqdm(enumerate(self.train_data_loader), 
+        #                     total=int(len(self.train_dataset)/self.train_data_loader.batch_size)):
+        for i, data in enumerate(prog_bar):
             data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
             self.optimizer.zero_grad()
             outputs = self.model(data)
@@ -108,6 +111,8 @@ class Trainer:
             )
             ###############################
 
+            prog_bar.set_description(desc=f"Loss: {loss:.4f} | mIoU: {train_running_mIoU:.4f} | PixAcc: {train_running_pixacc:.4f}")
+
             self.train_iters += 1
             
         ##### PER EPOCH LOSS #####
@@ -130,8 +135,11 @@ class Trainer:
         valid_running_inter, valid_running_union = 0, 0
         valid_running_correct, valid_running_label = 0, 0
         with torch.no_grad():
-            for i, data in tqdm(enumerate(self.valid_data_loader), 
-                                total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size)):
+            prog_bar = tqdm(self.valid_data_loader, 
+                        total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size))
+            # for i, data in tqdm(enumerate(self.valid_data_loader), 
+            #                     total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size)):
+            for i, data in enumerate(prog_bar):
                 data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
                 outputs = self.model(data)
                 outputs = outputs['out']
@@ -166,6 +174,8 @@ class Trainer:
                     phase='valid'
                 )
                 ###############################
+
+                prog_bar.set_description(desc=f"Loss: {loss:.4f} | mIoU: {valid_running_mIoU:.4f} | PixAcc: {valid_running_pixacc:.4f}")
 
                 self.valid_iters += 1
             
