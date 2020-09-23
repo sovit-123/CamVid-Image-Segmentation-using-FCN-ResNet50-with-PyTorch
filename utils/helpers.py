@@ -124,7 +124,8 @@ def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
 def visualize_from_dataloader(data_loader): 
     """
     Helper function to visualzie the data from 
-    dataloaders
+    dataloaders. Only executes if `DEBUG` is `True` in
+    `config.py`
     """
     data = iter(data_loader)   
     images, labels = data.next()
@@ -139,6 +140,12 @@ def visualize_from_dataloader(data_loader):
     plt.show()
 
 def visualize_from_path(image_path, seg_path):
+    """
+    Helper function to visualize image and segmentation maps after
+    reading from the images from path.
+    Only executes if `DEBUG` is `True` in
+    `config.py`
+    """
     train_sample_img = cv2.imread(image_path[0])
     train_sample_img = cv2.cvtColor(train_sample_img, cv2.COLOR_BGR2RGB)
     train_sample_seg = cv2.imread(seg_path[0])

@@ -9,6 +9,7 @@ from utils.helpers import label_colors_list, get_label_mask
 from utils.helpers import ALL_CLASSES, visualize_from_path
 from utils.helpers import visualize_from_dataloader
 from torch.utils.data import Dataset, DataLoader
+from PIL import Image
 
 train_images = glob.glob(f"{config.ROOT_PATH}/train/*")
 train_images.sort()
@@ -40,16 +41,14 @@ class CamVidDataset(Dataset):
         return len(self.path_images)
         
     def __getitem__(self, index):
-        image = cv2.imread(self.path_images[index], cv2.IMREAD_COLOR)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(self.path_segs[index], cv2.IMREAD_COLOR)
-        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-          
-        ##### THIS (READING WITH PIL) WORKS TOO #####
-        """
         image = np.array(Image.open(self.path_images[index]).convert('RGB'))
         mask = np.array(Image.open(self.path_segs[index]).convert('RGB'))
-        """
+          
+        ##### THIS (READING WITH OPENCV) WORKS TOO #####
+        # image = cv2.imread(self.path_images[index], cv2.IMREAD_COLOR)
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # mask = cv2.imread(self.path_segs[index], cv2.IMREAD_COLOR)
+        # mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
         #############################################               
         
         image = self.image_transform(image=image)['image']
