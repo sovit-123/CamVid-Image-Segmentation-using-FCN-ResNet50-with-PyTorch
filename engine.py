@@ -33,9 +33,6 @@ class Trainer:
         # initialize Tensorboard `SummaryWriter()`
         self.writer = Tensorboard_Writer()
 
-        self.train_iters = 0
-        self.valid_iters = 0
-
         print(f"NUM CLASSES: {self.num_classes}")
 
         if resume_training == 'yes':
@@ -43,6 +40,8 @@ class Trainer:
             # load the model checkpoint
             checkpoint = torch.load(model_path)
             self.trained_epochs = checkpoint['epoch']
+            self.train_iters = checkpoint['train_iters']
+            self.valid_iters = checkpoint['valid_iters']
             print(f"PREVIOUSLY TRAINED EPOCHS: {self.trained_epochs}")
             if self.trained_epochs >= self.epochs:
                 print('Current epochs less than previously trained epcochs...')
@@ -57,6 +56,8 @@ class Trainer:
                  print('TRAINED OPTIMIZER LOADED...')
 
         elif resume_training == 'no':
+            self.train_iters = 0
+            self.valid_iters = 0
             self.trained_epochs = 0
             print('TRAINING FROM BEGINNING')
 
@@ -71,8 +72,6 @@ class Trainer:
         train_running_correct, train_running_label = 0, 0
         prog_bar = tqdm(self.train_data_loader, 
                         total=int(len(self.train_dataset)/self.train_data_loader.batch_size))
-        # for i, data in tqdm(enumerate(self.train_data_loader), 
-        #                     total=int(len(self.train_dataset)/self.train_data_loader.batch_size)):
         for i, data in enumerate(prog_bar):
             data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
             self.optimizer.zero_grad()
@@ -137,8 +136,6 @@ class Trainer:
         with torch.no_grad():
             prog_bar = tqdm(self.valid_data_loader, 
                         total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size))
-            # for i, data in tqdm(enumerate(self.valid_data_loader), 
-            #                     total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size)):
             for i, data in enumerate(prog_bar):
                 data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
                 outputs = self.model(data)
@@ -193,4 +190,6 @@ class Trainer:
         return valid_loss, mIoU, pixel_acc
 
     def save_model(self, epochs):
-        save_model_dict(self.model, epochs, self.optimizer, self.criterion)
+        save_model_dict(self.model, epochs, 
+                        self.optimizer, self.criterion, 
+                        self.valid_iters, self.train_iters)
