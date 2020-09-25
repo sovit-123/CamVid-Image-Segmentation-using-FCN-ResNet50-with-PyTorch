@@ -42,9 +42,16 @@ A PyTorch implementation of the CamVid dataset semantic segmentation using FCN R
 
 
 
-## <u>Tensorboard Log Results</u>
+## <u>Tensorboard Validation Log Results After Training for 75 Epochs</u>
 
+* **Validation loss**
 
+  ![](https://raw.githubusercontent.com/sovit-123/CamVid-Image-Segmentation-using-FCN-ResNet50-with-PyTorch/65e4ef87a3d2a39f568ab68a80f93cf5d946e8eb/preview_images/Valid_Loss.svg)
 
+* **Validation Pixel Accuracy**
 
+  ![](https://raw.githubusercontent.com/sovit-123/CamVid-Image-Segmentation-using-FCN-ResNet50-with-PyTorch/65e4ef87a3d2a39f568ab68a80f93cf5d946e8eb/preview_images/Valid_Pixel_Acc.svg)
 
+* **Validation Mean IoU**
+
+  ![](https://raw.githubusercontent.com/sovit-123/CamVid-Image-Segmentation-using-FCN-ResNet50-with-PyTorch/65e4ef87a3d2a39f568ab68a80f93cf5d946e8eb/preview_images/Valid_mIoU.svg)
