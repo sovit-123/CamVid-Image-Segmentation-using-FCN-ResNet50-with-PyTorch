@@ -6,7 +6,7 @@
 
 * [About the Project](#About-the-Project)
 * [TODO](#TODO)
-* [Prerequisites / Dependencies](#Prerequisites-/-Dependencies)
+* [Prerequisites](#Prerequisites)
 * [Running the Python Scripts](#Running-the-Python-Scripts)
 * [Tensorboard Validation Log Results After Training for 75 Epochs](#Tensorboard-Validation-Log-Results-After-Training-for-75-Epochs)
 * [Some Useful Features of This Project](#Some-Useful-Features-of-This-Project)
@@ -43,7 +43,7 @@ A PyTorch implementation of the CamVid dataset semantic segmentation using FCN R
 
 
 
-## <u>Prerequisites / Dependencies</u>
+## <u>Prerequisites</u>
 
 * PyTorch == 1.6.0
 * Albumentations == 0.4.6
