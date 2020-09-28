@@ -1,0 +1,1 @@
+> [FOR TESTING ON IMAGES] python test.py --input ../input/camvid/test/0001TP_006690.png --weights checkpoints/model_75.pth

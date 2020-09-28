@@ -79,10 +79,10 @@ def get_label_mask(mask, class_values):
     return label_mask
 
 
-def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
+def draw_seg_maps(data, output, epoch, i):
     """
     This function color codes the segmentation maps that is generated while
-    validating.
+    validating. THIS IS NOT TO BE CALLED FOR SINGLE IMAGE TESTING
     """
     alpha = 0.6 # how much transparency
     beta = 1 - alpha # alpht + beta should be 1
@@ -120,6 +120,40 @@ def draw_seg_maps(data, output, label_colors_nparray, epoch, i):
     cv2.addWeighted(rgb, alpha, image, beta, gamma, image)
     cv2.imwrite(f"train_seg_maps/e{epoch}_b{i}.jpg", image)
 
+def draw_test_segmentation_map(outputs):
+    """
+    This function will apply color mask as per the output that we
+    get when executing `test.py` or `test_vid.py` on a single image 
+    or a video. NOT TO BE USED WHILE TRAINING OR VALIDATING.
+    """
+    labels = torch.argmax(outputs.squeeze(), dim=0).detach().cpu().numpy()
+    red_map = np.zeros_like(labels).astype(np.uint8)
+    green_map = np.zeros_like(labels).astype(np.uint8)
+    blue_map = np.zeros_like(labels).astype(np.uint8)
+    
+    for label_num in range(0, len(label_colors_list)):
+        index = labels == label_num
+        red_map[index] = np.array(label_colors_list)[label_num, 0]
+        green_map[index] = np.array(label_colors_list)[label_num, 1]
+        blue_map[index] = np.array(label_colors_list)[label_num, 2]
+        
+    segmented_image = np.stack([red_map, green_map, blue_map], axis=2)
+    return segmented_image
+
+def image_overlay(image, segmented_image):
+    """
+    This function will apply an overlay of the output segmentation
+    map on top of the orifinal input image. MAINLY TO BE USED WHEN
+    EXECUTING `test.py` or `test_vid.py`.
+    """
+    alpha = 0.6 # how much transparency to apply
+    beta = 1 - alpha # alpha + beta should equal 1
+    gamma = 0 # scalar added to each sum
+    image = np.array(image)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    segmented_image = cv2.cvtColor(segmented_image, cv2.COLOR_RGB2BGR)
+    cv2.addWeighted(segmented_image, alpha, image, beta, gamma, image)
+    return image
 
 def visualize_from_dataloader(data_loader): 
     """

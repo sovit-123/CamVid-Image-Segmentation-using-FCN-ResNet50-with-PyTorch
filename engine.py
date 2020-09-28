@@ -144,7 +144,7 @@ class Trainer:
                 # save the validation segmentation maps every...
                 # ... last batch of each epoch
                 if i == int(len(self.valid_dataset)/self.valid_data_loader.batch_size) - 1:
-                    draw_seg_maps(data, outputs, label_colors_list, epoch, i)
+                    draw_seg_maps(data, outputs, epoch, i)
 
                 ##### BATCH-WISE LOSS #####
                 loss = self.criterion(outputs, target)
