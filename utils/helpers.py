@@ -164,13 +164,18 @@ def visualize_from_dataloader(data_loader):
     data = iter(data_loader)   
     images, labels = data.next()
     image = images[1]
-    label = labels[1]
-    image = np.array(image, dtype='uint8')
+    # image = np.array(image, dtype='uint8') # use this if not normalizing, which is probably never
+    image = np.array(image)
     image = np.transpose(image, (1, 2, 0))
+    mean = np.array([0.45734706, 0.43338275, 0.40058118])
+    std = np.array([0.23965294, 0.23532275, 0.2398498])
+    image = std * image + mean
+    image = np.array(image, dtype=np.float32)
+    label = labels[1]
     images = [image, label.squeeze()]
     for i, image in enumerate(images):
         plt.subplot(1, 2, i+1)
-        plt.imshow(image, cmap='gray')
+        plt.imshow(image)
     plt.show()
 
 def visualize_from_path(image_path, seg_path):
