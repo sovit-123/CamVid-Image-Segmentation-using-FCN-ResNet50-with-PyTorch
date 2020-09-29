@@ -133,7 +133,7 @@ input/
 checkpoints/
 train_seg_maps/
 runs/
-outputs/
+outputs/*
 commands.txt
 outputs.md
 
