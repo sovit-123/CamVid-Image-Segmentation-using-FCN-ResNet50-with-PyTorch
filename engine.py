@@ -70,9 +70,13 @@ class Trainer:
         train_running_loss = 0.0
         train_running_inter, train_running_union = 0, 0
         train_running_correct, train_running_label = 0, 0
+        # calculate the number of batches
+        num_batches = int(len(self.train_dataset)/self.train_data_loader.batch_size)
         prog_bar = tqdm(self.train_data_loader, 
-                        total=int(len(self.train_dataset)/self.train_data_loader.batch_size))
+                        total=num_batches)
+        counter = 0 # to keep track of batch counter
         for i, data in enumerate(prog_bar):
+            counter += 1
             data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
             self.optimizer.zero_grad()
             outputs = self.model(data)
@@ -115,7 +119,7 @@ class Trainer:
             self.train_iters += 1
             
         ##### PER EPOCH LOSS #####
-        train_loss = train_running_loss / len(self.train_data_loader.dataset)
+        train_loss = train_running_loss / counter
         ##########################
 
         ##### PER EPOCH METRICS ######
@@ -133,17 +137,21 @@ class Trainer:
         valid_running_loss = 0.0
         valid_running_inter, valid_running_union = 0, 0
         valid_running_correct, valid_running_label = 0, 0
+        # calculate the number of batches
+        num_batches = int(len(self.valid_dataset)/self.valid_data_loader.batch_size)
         with torch.no_grad():
             prog_bar = tqdm(self.valid_data_loader, 
-                        total=int(len(self.valid_dataset)/self.valid_data_loader.batch_size))
+                        total=num_batches)
+            counter = 0 # to keep track of batch counter
             for i, data in enumerate(prog_bar):
+                counter += 1
                 data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
                 outputs = self.model(data)
                 outputs = outputs['out']
                 
                 # save the validation segmentation maps every...
                 # ... last batch of each epoch
-                if i == int(len(self.valid_dataset)/self.valid_data_loader.batch_size) - 1:
+                if i == num_batches - 1:
                     draw_seg_maps(data, outputs, epoch, i)
 
                 ##### BATCH-WISE LOSS #####
@@ -177,7 +185,7 @@ class Trainer:
                 self.valid_iters += 1
             
         ##### PER EPOCH LOSS #####
-        valid_loss = valid_running_loss / len(self.valid_data_loader.dataset)
+        valid_loss = valid_running_loss / counter
         ##########################
 
         ##### PER EPOCH METRICS ######
