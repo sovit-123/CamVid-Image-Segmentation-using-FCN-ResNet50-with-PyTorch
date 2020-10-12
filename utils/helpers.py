@@ -5,9 +5,9 @@ import cv2
 
 from tensorboardX import SummaryWriter
 
-class Tensorboard_Writer():
+class TensorboardWriter():
     def __init__(self):
-        super(Tensorboard_Writer, self).__init__()
+        super(TensorboardWriter, self).__init__()
     # initilaize `SummaryWriter()`
         self.writer = SummaryWriter()
     def tensorboard_writer(self, loss, mIoU, pix_acc, iterations, phase=None):

@@ -10,7 +10,7 @@ from tqdm import tqdm
 from utils.helpers import draw_seg_maps, label_colors_list
 from utils.helpers import save_model_dict
 from utils.metrics import eval_metric
-from utils.helpers import Tensorboard_Writer
+from utils.helpers import TensorboardWriter
 
 class Trainer:
     def __init__(self, model, train_data_loader, train_dataset, 
@@ -31,7 +31,7 @@ class Trainer:
         self.epochs = epochs
 
         # initialize Tensorboard `SummaryWriter()`
-        self.writer = Tensorboard_Writer()
+        self.writer = TensorboardWriter()
 
         print(f"NUM CLASSES: {self.num_classes}")
 
