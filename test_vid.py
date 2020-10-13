@@ -5,12 +5,13 @@ of your choice.
 USAGE: python test_vid.py --input <path to vid> --weights <path to saved checkpoint/weight file>
 """
 
-import torchvision
 import cv2
 import torch
 import argparse
 import time
-import torchvision.transforms as transforms
+import albumentations
+import config
+import numpy as np
 
 from PIL import Image
 from model import model
@@ -20,22 +21,21 @@ from utils.helpers import draw_test_segmentation_map, image_overlay
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', required=True, 
                     help='path to input image')
-parser.add_argument('-w', '--weights', required=True, 
+parser.add_argument('-w', '--model-path', dest='model_path', required=True, 
                     help='path to the trained weight file')
 args = vars(parser.parse_args())
 
-# image transforms
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                         std=[0.229, 0.224, 0.225])
+# define the image transforms
+transform = albumentations.Compose([
+    albumentations.Normalize(
+            mean=[0.45734706, 0.43338275, 0.40058118],
+            std=[0.23965294, 0.23532275, 0.2398498],
+            always_apply=True)
 ])
 
-# set the computation device
-device = torch.device('cuda' if torch.cuda.is_available else 'cpu')
 # load the model
-model = model.to(device)
-checkpoint = torch.load(args['weights'])
+model = model.to(config.DEVICE)
+checkpoint = torch.load(args['model_path'])
 # load the trained weights
 model.load_state_dict(checkpoint['model_state_dict'])
 # set the model to eval model
@@ -67,8 +67,11 @@ while(cap.isOpened()):
         start_time = time.time()
         with torch.no_grad():
             orig_frame = frame.copy()
-            frame = transform(frame).to(device)
-            frame = frame.unsqueeze(0)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = transform(image=frame)['image']
+            frame = np.transpose(frame, (2, 0, 1))
+            frame = torch.tensor(frame, dtype=torch.float32)
+            frame = frame.unsqueeze(0).to(config.DEVICE)
             # get predictions for the current frame
             outputs = model(frame)
         

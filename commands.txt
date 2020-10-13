@@ -1,1 +1,3 @@
-> [FOR TESTING ON IMAGES] python test.py --input ../input/camvid/test/0001TP_006690.png --weights checkpoints/model_75.pth
+> [FOR TESTING ON IMAGES] python test.py --model-path checkpoints/model_75.pth --input ../input/camvid/test/0001TP_006690.png
+
+> [FOR TESTING ON VIDEOS] python test_vid.py --model-path checkpoints/model_75.pth --input ../input/test_data/video6.mp4
