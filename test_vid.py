@@ -2,7 +2,7 @@
 Use this python script to apply semantic segmentation any videos
 of your choice.
 
-USAGE: python test_vid.py --input <path to vid> --weights <path to saved checkpoint/weight file>
+USAGE: python test_vid.py --input <path to vid> --model-path <path to saved checkpoint/weight file>
 """
 
 import cv2
