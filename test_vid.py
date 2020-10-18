@@ -21,7 +21,7 @@ from utils.helpers import draw_test_segmentation_map, image_overlay
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', required=True, 
                     help='path to input image')
-parser.add_argument('-w', '--model-path', dest='model_path', required=True, 
+parser.add_argument('-m', '--model-path', dest='model_path', required=True, 
                     help='path to the trained weight file')
 args = vars(parser.parse_args())
 

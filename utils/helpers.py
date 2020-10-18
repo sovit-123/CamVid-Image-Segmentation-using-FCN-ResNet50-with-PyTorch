@@ -2,23 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import cv2
+import config
 
 from tensorboardX import SummaryWriter
-
-class TensorboardWriter():
-    def __init__(self):
-        super(TensorboardWriter, self).__init__()
-    # initilaize `SummaryWriter()`
-        self.writer = SummaryWriter()
-    def tensorboard_writer(self, loss, mIoU, pix_acc, iterations, phase=None):
-        if phase == 'train':
-            self.writer.add_scalar('Train Loss', loss, iterations)
-            self.writer.add_scalar('Train mIoU', mIoU, iterations)
-            self.writer.add_scalar('Train Pixel Acc', pix_acc, iterations)
-        if phase == 'valid':
-            self.writer.add_scalar('Valid Loss', loss, iterations)
-            self.writer.add_scalar('Valid mIoU', mIoU, iterations)
-            self.writer.add_scalar('Valid Pixel Acc', pix_acc, iterations)
 
 label_colors_list = [
         (64, 128, 64), # animal
@@ -64,6 +50,27 @@ ALL_CLASSES = ['animal', 'archway', 'bicyclist', 'bridge', 'building', 'car',
         'train', 'tree', 'truckbase', 'tunnel', 'vegetationmisc', 'void',
         'wall']
 
+"""
+This (`class_values`) assigns a specific class label to the each of the classes.
+For example, `animal=0`, `archway=1`, and so on.
+"""
+class_values = [ALL_CLASSES.index(cls.lower()) for cls in config.CLASSES_TO_TRAIN]
+
+class TensorboardWriter():
+    def __init__(self):
+        super(TensorboardWriter, self).__init__()
+    # initilaize `SummaryWriter()`
+        self.writer = SummaryWriter()
+    def tensorboard_writer(self, loss, mIoU, pix_acc, iterations, phase=None):
+        if phase == 'train':
+            self.writer.add_scalar('Train Loss', loss, iterations)
+            self.writer.add_scalar('Train mIoU', mIoU, iterations)
+            self.writer.add_scalar('Train Pixel Acc', pix_acc, iterations)
+        if phase == 'valid':
+            self.writer.add_scalar('Valid Loss', loss, iterations)
+            self.writer.add_scalar('Valid mIoU', mIoU, iterations)
+            self.writer.add_scalar('Valid Pixel Acc', pix_acc, iterations)
+
 def get_label_mask(mask, class_values): 
     """
     This function encodes the pixels belonging to the same class
@@ -102,17 +109,18 @@ def draw_seg_maps(data, output, epoch, i):
     image = image * 255 # else OpenCV will save black image
 
 
-    r = np.zeros_like(seg_map).astype(np.uint8)
-    g = np.zeros_like(seg_map).astype(np.uint8)
-    b = np.zeros_like(seg_map).astype(np.uint8)
+    red_map = np.zeros_like(seg_map).astype(np.uint8)
+    green_map = np.zeros_like(seg_map).astype(np.uint8)
+    blue_map = np.zeros_like(seg_map).astype(np.uint8)
     
-    for l in range(0, 32):
-        idx = seg_map == l
-        r[idx] = np.array(label_colors_list)[l, 0]
-        g[idx] = np.array(label_colors_list)[l, 1]
-        b[idx] = np.array(label_colors_list)[l, 2]
+    for label_num in range(0, len(label_colors_list)):
+        if label_num in class_values:
+            idx = seg_map == label_num
+            red_map[idx] = np.array(label_colors_list)[label_num, 0]
+            green_map[idx] = np.array(label_colors_list)[label_num, 1]
+            blue_map[idx] = np.array(label_colors_list)[label_num, 2]
         
-    rgb = np.stack([r, g, b], axis=2)
+    rgb = np.stack([red_map, green_map, blue_map], axis=2)
     rgb = np.array(rgb, dtype=np.float32)
     # convert color to BGR format for OpenCV
     rgb = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
@@ -132,10 +140,11 @@ def draw_test_segmentation_map(outputs):
     blue_map = np.zeros_like(labels).astype(np.uint8)
     
     for label_num in range(0, len(label_colors_list)):
-        index = labels == label_num
-        red_map[index] = np.array(label_colors_list)[label_num, 0]
-        green_map[index] = np.array(label_colors_list)[label_num, 1]
-        blue_map[index] = np.array(label_colors_list)[label_num, 2]
+        if label_num in class_values:
+            idx = labels == label_num
+            red_map[idx] = np.array(label_colors_list)[label_num, 0]
+            green_map[idx] = np.array(label_colors_list)[label_num, 1]
+            blue_map[idx] = np.array(label_colors_list)[label_num, 2]
         
     segmented_image = np.stack([red_map, green_map, blue_map], axis=2)
     return segmented_image
