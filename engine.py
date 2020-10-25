@@ -1,13 +1,11 @@
 import torch
-import config
 import torch.nn as nn
-import torch.optim as optim
 import numpy as np
 import sys
 
 from model import model
 from tqdm import tqdm
-from utils.helpers import draw_seg_maps, label_colors_list
+from utils.helpers import draw_seg_maps
 from utils.helpers import save_model_dict
 from utils.metrics import eval_metric
 from utils.helpers import TensorboardWriter
@@ -15,13 +13,9 @@ from utils.helpers import TensorboardWriter
 class Trainer:
     def __init__(self, model, train_data_loader, train_dataset, 
                  valid_data_loader, valid_dataset, classes_to_train, 
-                 epochs, resume_training=None, model_path=None):
+                 epochs, device, lr, resume_training=None, model_path=None):
         super(Trainer, self).__init__()
 
-        self.optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
-        print('OPTIMIZER INITIALIZED')
-        self.criterion = nn.CrossEntropyLoss() 
-        print('LOSS FUNCTION INITIALIZED')
         self.train_data_loader = train_data_loader
         self.train_dataset = train_dataset
         self.valid_data_loader = valid_data_loader
@@ -29,6 +23,13 @@ class Trainer:
         self.model = model
         self.num_classes = len(classes_to_train)
         self.epochs = epochs
+        self.device = device
+        self.lr = lr
+
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=self.lr)
+        print('OPTIMIZER INITIALIZED')
+        self.criterion = nn.CrossEntropyLoss() 
+        print('LOSS FUNCTION INITIALIZED')
 
         # initialize Tensorboard `SummaryWriter()`
         self.writer = TensorboardWriter()
@@ -77,7 +78,7 @@ class Trainer:
         counter = 0 # to keep track of batch counter
         for i, data in enumerate(prog_bar):
             counter += 1
-            data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
+            data, target = data[0].to(self.device), data[1].to(self.device)
             self.optimizer.zero_grad()
             outputs = self.model(data)
             outputs = outputs['out']
@@ -145,7 +146,7 @@ class Trainer:
             counter = 0 # to keep track of batch counter
             for i, data in enumerate(prog_bar):
                 counter += 1
-                data, target = data[0].to(config.DEVICE), data[1].to(config.DEVICE)
+                data, target = data[0].to(self.device), data[1].to(self.device)
                 outputs = self.model(data)
                 outputs = outputs['out']
                 

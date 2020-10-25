@@ -34,6 +34,8 @@ if args['resume_training'] == 'yes':
     valid_dataset,
     config.CLASSES_TO_TRAIN,
     epochs,
+    config.DEVICE, 
+    config.LR,
     args['resume_training'],
     model_path=args['model_path']
 )
@@ -48,6 +50,8 @@ else:
         valid_dataset,
         config.CLASSES_TO_TRAIN,
         epochs,
+        config.DEVICE, 
+        config.LR,
         args['resume_training']
     )
 
